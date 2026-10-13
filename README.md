@@ -79,13 +79,97 @@ Recommended next steps:
 
 ## Repository Contents
 
-The repository may include the notebook, dataset files, and generated result files. File availability depends on what has been included in the local project folder.
+The main files used for this experiment are:
 
-## Running the Notebook
+- `README.md` — project overview, setup, and usage instructions.
+- `Chorus_Model.ipynb` — notebook containing feature preparation, model training, evaluation, and plots.
+- `feature_extract_04.csv` — precomputed dataset used by the notebook.
+- `model_results.csv` — exported model metrics from the current six-model run, if present.
+- `PES1UG24AM163_PES1UG25AM807.pdf` — project report, if included in the submission.
+- `PES1UG24AM163_PES1UG25AM807.pptx` — project presentation, if included in the submission.
 
-1. Open `Chorus_Model.ipynb` in Jupyter Notebook or Google Colab.
-2. Upload or place `feature_extract_04.csv` where the notebook expects it.
-3. Run the notebook cells in order.
-4. Review the model comparison table and evaluation plots.
+Intermediate CSVs and the data-scraping notebook may be included for documenting earlier processing steps, but they are not required to run the main modelling notebook if `feature_extract_04.csv` is available.
 
-Make sure the dataset filename and file paths in the notebook match your environment before running it.
+## Setup
+
+### Option A: Run in Google Colab
+
+1. Open `Chorus_Model.ipynb` in Google Colab.
+2. Upload `feature_extract_04.csv` to the Colab session, or mount Google Drive and place the CSV at the path expected by the notebook.
+3. Check the notebook's data-loading cell and make sure its path points to `feature_extract_04.csv`.
+4. Run the cells from top to bottom.
+
+If a cell reports that a Python package is missing, install the package named in the error in a Colab cell using `!pip install package-name`, then rerun the failed cell and subsequent cells.
+
+### Option B: Run locally with Jupyter
+
+Requirements:
+- Python 3.10 or a compatible Python version supported by the installed packages
+- Jupyter Notebook or JupyterLab
+- The dataset file `feature_extract_04.csv`
+
+From the project directory, create and activate a virtual environment if desired.
+
+**Windows (PowerShell):**
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install jupyter pandas numpy matplotlib seaborn scikit-learn pca
+jupyter notebook
+```
+
+**macOS / Linux:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install jupyter pandas numpy matplotlib seaborn scikit-learn pca
+jupyter notebook
+```
+
+Open `Chorus_Model.ipynb` in the Jupyter interface. Keep `feature_extract_04.csv` in the directory expected by the notebook, or update the file path in the data-loading cell.
+
+> Package versions may affect execution. If the notebook reports a missing dependency, install that dependency in the active environment and restart the kernel if necessary.
+
+## Usage
+
+1. Ensure `feature_extract_04.csv` is available at the path used by the notebook.
+2. Open `Chorus_Model.ipynb`.
+3. Run all cells in order. The notebook prepares the features, creates the train/test split, trains six classifiers, and calculates evaluation metrics.
+4. Review the result table and plots for training and test accuracy, precision, recall, and F1 score.
+5. The main results cell exports the current six-model table to `model_results_6_models.csv`. If your repository uses the filename `model_results.csv`, ensure it is generated from the same current six-model results rather than an older run.
+
+### Models evaluated
+
+- Logistic Regression
+- Linear Discriminant Analysis (LDA)
+- Support Vector Machine (SVM, RBF kernel)
+- Random Forest
+- Gradient Boosting
+- Multi-Layer Perceptron (MLP) neural network
+
+## Results
+
+In the current recorded run:
+- **SVM** achieved the highest test accuracy, approximately **59.2%**.
+- **MLP** achieved the highest test F1 score, approximately **0.630**.
+- Random Forest and Gradient Boosting showed large training-to-test performance gaps, suggesting possible overfitting.
+
+These results come from one train/test split and should be treated as preliminary rather than definitive.
+
+## Limitations and Future Improvements
+
+- The current dataset contains 756 songs and may differ from datasets used in other experiments.
+- Feature selection is performed before the train/test split in the current workflow, which can introduce data leakage.
+- The evaluation uses one split rather than stratified cross-validation.
+- Model hyperparameters have not been comprehensively tuned.
+- The raw audio collection and chorus-extraction pipeline has not been independently rerun as part of this notebook.
+
+Recommended next steps:
+- Move feature selection and preprocessing inside a training-only pipeline.
+- Evaluate models with stratified cross-validation.
+- Tune model hyperparameters and report mean scores and variability.
+- Keep notebook outputs, plots, and exported result files synchronized.
